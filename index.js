@@ -290,8 +290,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     Promise.all([
-      fetch('/copart.json').then(response => response.json()),
-      fetch('/iaai.json').then(response => response.json())
+      fetch('./copart.json').then(response => response.json()),
+      fetch('./iaai.json').then(response => response.json())
     ])
     .then(([copart, iaai]) => {
       copartData = copart;
