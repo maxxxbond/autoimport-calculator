@@ -1,9 +1,11 @@
 let copartData = {};
 let iaaiData = {};
+let usdRate = 0;
+let euroRate = 0;
+let euroToUsd = 0;
 
 function changeEngineType() {
   const engineType = document.getElementById('engineType').value;
-  console.log(engineType);
   const batteryElement = document.getElementById('battery');
   const engineVolumeElement = document.getElementById('engine-volume');
 
@@ -129,8 +131,6 @@ function calc() {
   const volume = parseFloat(document.getElementById('volume').value) / 1000;
   const batteryVolume = parseFloat(document.getElementById('battery-input').value);
   const yearKlaipeda = document.getElementById('year').value;
-  const euroRate = 1.04;
-
   if (isNaN(fixPrice) || !searchValue || isNaN(priceCar) || !auctionType || !selectedCity) {
     return;
   }
@@ -146,7 +146,6 @@ function calc() {
   }
   
   const service = 500;
-  const strahuvanya = priceCar * 0.01;
   const BEP = 550;
 
   const data = auctionType === 'iaai' ? iaaiData : copartData;
@@ -174,7 +173,9 @@ function calc() {
       console.error(error);
       return;
     }
-
+    
+    const carpriceandzbir = priceCar + zbir;
+    const strahuvanya = carpriceandzbir * 0.01;
     let swift = (priceCar + zbir) * 0.026 + 100;
 
     let acciseSum = 0;
@@ -193,15 +194,11 @@ function calc() {
     } else if (engineType === "electro") {
         acciseSum = batteryVolume;
     }
-    acciseSum *= euroRate;
+    acciseSum *= euroToUsd;
 
     if (engineType !== "electro") {
-      mitoValue = priceCar * 0.1;
-      console.log('mitoValue', mitoValue);
-      console.log('acciseSum', acciseSum);
-      console.log('priceCar', priceCar);
-      pdvValue = (priceCar + mitoValue + acciseSum) * 0.2;
-      console.log('pdvValue', pdvValue);
+      mitoValue = (carpriceandzbir + 1600) * 0.1;
+      pdvValue = (carpriceandzbir + mitoValue + acciseSum + 1600) * 0.2 + 10;
     }
     else {
       hazardous = 100;
@@ -211,10 +208,10 @@ function calc() {
     document.getElementById('pdv').textContent = `$${pdvValue.toFixed(2)}`;
     document.getElementById('accise').textContent = `$${acciseSum.toFixed(2)}`;
     
-    document.getElementById('us-delivery').textContent = `$${cityPrices}`;
-    document.getElementById('service').textContent = `$${service}`;
+    document.getElementById('us-delivery').textContent = `$${cityPrices.toFixed(2)}`;
+    document.getElementById('service').textContent = `$${service.toFixed(2)}`;
     document.getElementById('kompleks').textContent = `${kompleksDisplay}`;
-    document.getElementById('strahuvanya').textContent = `$${strahuvanya}`;
+    document.getElementById('strahuvanya').textContent = `$${strahuvanya.toFixed(2)}`;
     document.getElementById('hazardous').textContent = `$${hazardous.toFixed(2)}`;
     document.getElementById('swift').textContent = `$${swift.toFixed(2)}`;
     document.getElementById('zbir').textContent = `$${zbir.toFixed(2)}`;
@@ -258,28 +255,36 @@ function updateDatalist() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const response = await axios.get('https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json');
+        const usdObject = response.data.find(obj => obj.txt === "Долар США");
+        const euroObject = response.data.find(obj => obj.txt === "Євро");
+        
+        usdRate = usdObject.rate;
+        euroRate = euroObject.rate;
+        euroToUsd = euroRate / usdRate;
+        
+        console.log('USD Rate:', usdRate);
+        console.log('Euro Rate:', euroRate);
+        console.log('Euro to USD Rate:', euroToUsd);
+    } catch (error) {
+        console.error('Error fetching currency rates:', error);
+        alert('Помилка отримання курсів валют. Використовуються значення за замовчуванням.');
+        usdRate = 37.5;
+        euroRate = 40.5;
+        euroToUsd = 1.04;
+    }
+
     const yearSelect = document.getElementById('year');
     const volumeSelect = document.getElementById('volume');
       
-    const currentYear = new Date().getFullYear();
-    for (let i = currentYear; i >= 2007; i--) {
+    for (let i = 1; i <= 15; i++) {
       const option = document.createElement('option');
-      
-      if (i === currentYear) {
-        option.value = 1;
-      }
-      else {
-        option.value = currentYear - i;
-      }
-
+      option.value = i;
       option.textContent = i;
       yearSelect.appendChild(option);
     }
-    const olderOption = document.createElement('option');
-    olderOption.value = currentYear - 2007;
-    olderOption.textContent = '2007 і старше';
-    yearSelect.appendChild(olderOption);
 
     // Populate volume options dynamically
     for (let i = 100; i <= 10000; i += 100) {
