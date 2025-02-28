@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logistics Calculator</title>
+  <link rel="stylesheet" href="/index.css" />
+</head>
+<body>
+  <div class="calculator-container">
+    <h1>Калькулятор доставки</h1>
+    <div class="calculator-grid">
+      <div class="input-column">
+        <div class="input-group">
+          <label for="pokupka">Вартість авто:</label>
+          <input type="number" id="pokupka" placeholder="Наприклад: 10000" min="0" step="100" onchange="calc()"/>
+        </div>
+
+        <div class="input-group">
+          <label for="fix">Вартість ремонту:</label>
+          <input type="number" id="fixPrice" placeholder="Наприклад: 1200" min="0" step="50" onchange="calc()"/>
+        </div>
+        
+        <div class="btn-container">
+          <label class="switch">
+            <input type="checkbox" name="auction_mode" id="auction_mode" value="1" onchange="updateDatalist()">
+            <label for="auction_mode" data-on="IaaI" data-off="Copart" class="switch-inner"></label>
+          </label>
+
+          <label class="switch">
+            <input type="checkbox" name="city_mode" id="city_mode" value="1" onchange="calc()">
+            <label for="city_mode" data-on="Київ" data-off="Львів" class="switch-inner"></label>
+          </label>
+        </div>
+        
+        <div class="input-group">
+          <label for="search">Введіть назву площадки:</label>
+          <input type="text" id="search" placeholder="Наприклад: LOS ANGELES" list="city-list" autocomplete="off" />
+          <datalist id="city-list">
+            <!-- Підказки будуть додані динамічно через JavaScript -->
+          </datalist>
+        </div>
+
+        <div class="input-group">
+          <label for="engineType">Тип двигуна:</label>
+          <select id="engineType" class="calc-form-element" onchange="changeEngineType()">
+            <option value="petrol">Бензиновий</option>
+            <option value="diesel">Дизельний</option>
+            <option value="electro">Електро</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="year">Рік випуску:</label>
+          <select id="year" class="calc-form-element" onchange="calc()">
+            <!-- Options will be added dynamically -->
+          </select>
+        </div>
+        <div class="input-group" id="engine-volume">
+          <label for="volume">Об'єм двигуна (см³):</label>
+          <input type="number" id="volume" class="calc-input" placeholder="Наприклад: 2000" min="0" step="100" onchange="calc()" />
+        </div>
+        <div class="input-group" hidden id="battery">
+          <label for="battery-input">Об'єм батареї (кВт*год):</label>
+          <input type="text" id="battery-input" class="calc-input" placeholder="Наприклад: 80" min="0" step="10" onchange="calc()" />
+        </div>
+        
+        <button id="calculate-btn">Розрахувати</button>
+      </div>
+      
+      <div class="result-column">
+        <div class="result">
+          <h3>Результати:</h3>
+          <p>ФРАХТ: <span id="us-delivery">-</span></p>
+          <p>SWIFT: <span id="swift">-</span></p>
+          <p>БЕП: <span id="BEP">-</span></p>
+          <p>Сервіс: <span id="service">-</span></p>
+          <p>Комплекс: <span id="kompleks">-</span></p>
+          <p>Страхування: <span id="strahuvanya">-</span></p>
+          <p>Небезпечний вантаж: <span id="hazardous">-</span></p>
+          <p>Аукціоний збір: <span id="zbir">-</span></p>
+          <p>Мито: <span id="mito">-</span></p>
+          <p>ПДВ: <span id="pdv">-</span></p>
+          <p>Акциз: <span id="accise">-</span></p>
+          <h2>Загальна ціна: <span id="total-price">$0</span></h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/index.js"></script>
+</body>
+</html>
