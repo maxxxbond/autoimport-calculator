@@ -131,7 +131,7 @@ function calc() {
   const volume = parseFloat(document.getElementById('volume').value) / 1000;
   const batteryVolume = parseFloat(document.getElementById('battery-input').value);
   const yearKlaipeda = document.getElementById('year').value;
-  if (isNaN(fixPrice) || !searchValue || isNaN(priceCar) || !auctionType || !selectedCity) {
+  if (isNaN(fixPrice) || !searchValue || isNaN(priceCar) || !auctionType || !selectedCity || isNaN(volume) || isNaN(batteryVolume) || isNaN(yearKlaipeda)) {
     return;
   }
 
